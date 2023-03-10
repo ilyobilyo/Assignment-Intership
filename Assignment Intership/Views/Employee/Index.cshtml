@@ -1,0 +1,80 @@
+﻿@using Assignment_Intership.Models.Employee.EmployeeViewModels
+@model HomeEmployeeViewModel
+
+<h1>Employees</h1>
+
+<table class="table table-dark">
+	<thead>
+		<tr>
+			<th scope="col">
+				Image
+			</th>
+			<th scope="col">
+				Emplyee Name
+				<a class="sort" hfer="#"><i class="fas fa-arrow-down"></i></a>
+			</th>
+			<th scope="col">
+				Email
+			</th>
+			<th scope="col">
+				Phone Number
+			</th>
+			<th scope="col">
+				Date of Birth
+			</th>
+			<th scope="col">
+				Monthly Salary
+				<a class="sortSalary" hfer="#"><i class="fas fa-arrow-down"></i></a>
+			</th>
+			<th scope="col">
+				Actions
+			</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		@foreach (var emp in Model.Employees)
+		{
+			<tr scope="row" data-id="@emp.Id">
+				<td>
+					<img style="width: 30px; height:30px;"  alt="image" className="image" />
+				</td>
+				<td>
+					@emp.FullName
+				</td>
+				<td>
+					@emp.Email
+				</td>
+				<td>
+					@emp.PhoneNumber
+				</td>
+				<td>
+					@emp.DateOfBirth
+				</td>
+				<td>
+					<span class="value">@emp.MonthlySalary</span><span>$</span>
+				</td>
+				<td>
+					<a class="btn btn-warning" href="/Employee/Edit/@emp.Id"><i class="fas fa-edit"></i> Edit</a>
+					<a class="btn btn-danger" href="#" data-id="@emp.Id"><i class="fas fa-trash"></i> Delete</a>
+					<a class="btn btn-primary" href="/Employee/Details/@emp.Id"><i class="fas fa-info-circle"></i> Details</a>
+				</td>
+			</tr>
+		}
+
+	</tbody>
+</table>
+
+<div>
+	<a class="btn btn-primary" href="/Employee/Create">Add Employee</a>
+</div>
+
+<div class="page" style="margin-top:20px; text-align:center">
+	<a class="btn btn-outline-dark" href="#" style="display:none">Prev</a>
+	<p style="display:inline-block">@Model.Page/@Model.TotalPages</p>
+	<a class="btn btn-outline-dark" href="#" style="display:none">Next</a>
+</div>
+
+<script src="~/js/employees.js"></script>
+<script src="~/js/image.js"></script>
+

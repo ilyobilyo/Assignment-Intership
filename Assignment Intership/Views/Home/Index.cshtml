@@ -1,0 +1,68 @@
+﻿@using Assignment_Intership.Models.Employee.EmployeeViewModels
+@model IEnumerable<EmployeeViewModel>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>Top 5 Employees For Last Month</h1>
+
+<table class="table table-dark">
+	<thead>
+		<tr>
+			<th scope="col">
+				Image
+			</th>
+			<th scope="col">
+				Emplyee Name
+			</th>
+			<th scope="col">
+				Email
+			</th>
+			<th scope="col">
+				Phone Number
+			</th>
+			<th scope="col">
+				Date of Birth
+			</th>
+			<th scope="col">
+				Monthly Salary
+			</th>
+			<th scope="col">
+				Competed Tasks For Last Month
+			</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		@foreach (var emp in Model)
+		{
+			<tr scope="row" data-id="@emp.Id">
+				<td>
+					<img style="width: 30px; height:30px;" alt="image" className="image" />
+				</td>
+				<td>
+					@emp.FullName
+				</td>
+				<td>
+					@emp.Email
+				</td>
+				<td>
+					@emp.PhoneNumber
+				</td>
+				<td>
+					@emp.DateOfBirth
+				</td>
+				<td>
+					@emp.MonthlySalary $
+				</td>
+				<td>
+					@emp.CompletedTasksForLastMonth
+				</td>
+			</tr>
+		}
+
+	</tbody>
+</table>
+
+<script src="~/js/image.js"></script>

@@ -1,0 +1,80 @@
+﻿@using Assignment_Intership.Models.Task.TaskViewModels
+@model HomeTaskViewModel
+
+<h1>Tasks</h1>
+
+<table class="table table-striped table-dark">
+	<thead>
+		<tr>
+			<th scope="col">
+				Title
+			</th>
+			<th scope="col">
+				Description
+			</th>
+			<th scope="col">
+				Employee
+			</th>
+			<th scope="col">
+				Created At
+			</th>
+			<th scope="col">
+				Due Date
+			</th>
+			<th scope="col">
+				Actions
+			</th>
+		</tr>
+	</thead>
+
+	<tbody>
+		@foreach (var task in Model.Tasks)
+		{
+			<tr scope="row">
+				<td>
+					@task.Title
+				</td>
+				<td>
+					@task.Description
+				</td>
+				<td>
+					@task.Employee
+				</td>
+				<td>
+					@task.CreatedAt
+				</td>
+				<td>
+					@task.DueDate
+				</td>
+				<td>
+					<a class="btn btn-warning" href="/Task/Edit/@task.Id">Edit</a>
+					<a class="btn btn-danger" href="#" data-id="@task.Id">Delete</a>
+					@if (task.IsCompleted)
+					{
+						<button class="btn btn-secondary" disabled>Completed</button>
+					}
+					else
+					{
+						<a class="complete btn btn-success" href="#" data-id="@task.Id">Complete</a>
+					}
+				</td>
+			</tr>
+		}
+
+	</tbody>
+</table>
+
+<div>
+	<a class="btn btn-primary" href="/Task/Create">Create Task</a>
+</div>
+
+
+<div class="page" style="margin-top:20px; text-align:center">
+	<a class="btn btn-outline-dark" href="#" style="display:none">Prev</a>
+	<p style="display:inline-block">@Model.Page/@Model.TotalPages</p>
+	<a class="btn btn-outline-dark" href="#" style="display:none">Next</a>
+</div>
+
+<script src="~/js/tasks.js"></script>
+
+
