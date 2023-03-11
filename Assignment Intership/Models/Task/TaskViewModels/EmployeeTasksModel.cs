@@ -6,6 +6,8 @@
 
         public string CompletedAt { get; set; }
 
+        public string? Status { get; set; }
+
         public bool IsCompleted { get; set; }
     }
 }

@@ -10,7 +10,9 @@
 
         public string DueDate { get; set; }
 
-		public string CreatedAt { get; set; }
+        public string? Status { get; set; }
+
+        public string CreatedAt { get; set; }
 
 		public bool IsCompleted { get; set; }
 
