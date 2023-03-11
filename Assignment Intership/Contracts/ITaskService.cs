@@ -14,8 +14,12 @@ namespace Assignment_Intership.Contracts
 
         Task<bool> Delete(Guid id);
 
-        Task<TaskServiceModel> CompleteTask(Guid id);
+        Task<TaskServiceModel> ChangeTaskStatus(Guid id);
 
         Task<int> GetTotalPages();
+
+        Task<IEnumerable<TaskServiceModel>> GetExpiredTasks(int pageNumber);
+
+        Task<int> GetExpiredTasksTotalPages();
     }
 }

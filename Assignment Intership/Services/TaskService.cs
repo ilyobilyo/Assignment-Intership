@@ -22,7 +22,7 @@ namespace Assignment_Intership.Services
             this.employeeService = employeeService;
         }
 
-        public async Task<TaskServiceModel> CompleteTask(Guid id)
+        public async Task<TaskServiceModel> ChangeTaskStatus(Guid id)
         {
             var task = await GetById(id);
 
@@ -31,16 +31,29 @@ namespace Assignment_Intership.Services
                 throw new ArgumentException("Task not found");
             }
 
-            var employee = await employeeService.GetById(task.EmployeeId);
-
-            if (employee == null)
+            if (task.Status == Constants.TaskStatus.Start)
             {
-                throw new ArgumentException("This task dont have an employee");
+                task.Status = Constants.TaskStatus.InProgress;
+                task.UpdatedAt = DateTime.Now;
             }
+            else if (task.Status == Constants.TaskStatus.InProgress)
+            {
+                task.Status = Constants.TaskStatus.Completed;
+                task.UpdatedAt = DateTime.Now;
+            }
+            else
+            {
+                var employee = await employeeService.GetById(task.EmployeeId);
 
-            task.IsCompleted = true;
-            task.CompletedAt = DateTime.Now;
-            employee.CompletedTasks++;
+                if (employee == null)
+                {
+                    throw new ArgumentException("This task dont have an employee");
+                }
+
+                task.IsCompleted = true;
+                task.CompletedAt = DateTime.Now;
+                employee.CompletedTasks++;
+            }
 
             await repo.SaveChangesAsync();
 
@@ -70,6 +83,7 @@ namespace Assignment_Intership.Services
                 Title = model.Title,
                 Description = model.Description,
                 DueDate = model.DueDate,
+                Status = Constants.TaskStatus.Start,
                 EmployeeId = model.EmployeeId,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
@@ -130,9 +144,38 @@ namespace Assignment_Intership.Services
             return mapper.Map<IEnumerable<TaskServiceModel>>(tasks);
         }
 
+        public async Task<IEnumerable<TaskServiceModel>> GetExpiredTasks(int pageNumber)
+        {
+            int pageSize = PagenationConstants.PageSize;
+
+            var tasks = await repo.All<Assignment_Intership.Data.Models.Task>()
+                .Include(x => x.Employee)
+                .Where(x => x.DueDate < DateTime.Now && x.Status != Constants.TaskStatus.Completed)
+                .OrderByDescending(x => x.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return mapper.Map<IEnumerable<TaskServiceModel>>(tasks);
+        }
+
         public async Task<int> GetTotalPages()
         {
             var totalTasksCount = await repo.All<Data.Models.Task>().CountAsync();
+
+            if (totalTasksCount % PagenationConstants.PageSize != 0)
+            {
+                return (totalTasksCount / PagenationConstants.PageSize) + 1;
+            }
+
+            return totalTasksCount / PagenationConstants.PageSize;
+        }
+
+        public async Task<int> GetExpiredTasksTotalPages()
+        {
+            var totalTasksCount = await repo.All<Data.Models.Task>()
+                .Where(x => x.DueDate < DateTime.Now && x.Status != Constants.TaskStatus.Completed)
+                .CountAsync();
 
             if (totalTasksCount % PagenationConstants.PageSize != 0)
             {
@@ -146,6 +189,7 @@ namespace Assignment_Intership.Services
         {
             return await repo.All<Assignment_Intership.Data.Models.Task>().FirstOrDefaultAsync(x => x.Id == id);
         }
+
         private void UpdateTask(Data.Models.Task task, TaskServiceModel model)
         {
             task.Title = model.Title;
@@ -154,5 +198,7 @@ namespace Assignment_Intership.Services
             task.EmployeeId = model.EmployeeId;
             task.UpdatedAt = DateTime.Now;
         }
+
+        
     }
 }
