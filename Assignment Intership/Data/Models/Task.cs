@@ -17,6 +17,9 @@ namespace Assignment_Intership.Data.Models
         [Required]
         public DateTime DueDate { get; set; }
 
+        [MaxLength(20)]
+        public string? Status { get; set; }
+
         public Guid? EmployeeId { get; set; }
 
         public Employee? Employee { get; set; }
