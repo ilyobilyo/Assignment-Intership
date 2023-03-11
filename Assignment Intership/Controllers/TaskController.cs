@@ -41,6 +41,28 @@ namespace Assignment_Intership.Controllers
             return View(homeViewModel);
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> ExpiredTasks([FromQuery] int pageNumber)
+        {
+            if (pageNumber == 0)
+            {
+                pageNumber = 1;
+            }
+
+            var homeViewModel = new HomeTaskViewModel();
+
+            var tasksServiceModels = await taskService.GetExpiredTasks(pageNumber);
+
+            var taskList = mapper.Map<IEnumerable<TaskViewModel>>(tasksServiceModels);
+
+            homeViewModel.Tasks = taskList;
+            homeViewModel.Page = pageNumber;
+            homeViewModel.TotalPages = await taskService.GetExpiredTasksTotalPages();
+
+            return View(homeViewModel);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -81,6 +103,11 @@ namespace Assignment_Intership.Controllers
         public async Task<IActionResult> Edit([FromRoute] Guid id)
         {
             var taskModel = await taskService.GetById(id);
+
+            if (taskModel == null)
+            {
+                return RedirectToAction("Error", "Home", new { error = "Task not found" });
+            }
 
             var viewModel = mapper.Map<TaskEditViewModel>(taskModel);
 
@@ -132,13 +159,13 @@ namespace Assignment_Intership.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Complete([FromRoute] Guid id)
+        public async Task<IActionResult> ChangeTaskStatus([FromRoute] Guid id)
         {
             try
             {
-                var task = await taskService.CompleteTask(id);
+                var task = await taskService.ChangeTaskStatus(id);
 
-                return Ok();
+                return Ok(new {Task = task});
             }
             catch (Exception e)
             {
@@ -146,6 +173,6 @@ namespace Assignment_Intership.Controllers
             }
         }
 
-       
+
     }
 }

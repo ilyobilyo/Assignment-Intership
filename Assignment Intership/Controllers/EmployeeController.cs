@@ -75,6 +75,11 @@ namespace Assignment_Intership.Controllers
         {
             var employeeModel = await employeeService.GetById(id);
 
+            if (employeeModel == null)
+            {
+                return RedirectToAction("Error", "Home", new { error = "Employee not found" });
+            }
+
             var viewModel = mapper.Map<EmployeeEditViewModel>(employeeModel);
 
             return View(viewModel);
