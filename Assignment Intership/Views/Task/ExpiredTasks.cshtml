@@ -1,11 +1,11 @@
 ﻿@using Assignment_Intership.Models.Task.TaskViewModels
 @model HomeTaskViewModel
 
-<h1>Tasks</h1>
+<h1>Expired Tasks</h1>
 
-<a class="btn btn-info btn-lg" style="margin-bottom: 15px" asp-controller="Task" asp-action="ExpiredTasks"><i class="fas fa-hourglass-end"></i> Expired Tasks</a>
+<a class="btn btn-info btn-lg" style="margin-bottom: 15px" asp-controller="Task" asp-action="Index"><i class="fas fa-tasks"></i> Tasks</a>
 
-<table class="table table-striped table-dark">
+<table class="table table-striped table-danger"">
 	<thead>
 		<tr>
 			<th scope="col">
@@ -51,28 +51,12 @@
 				<td data-id="@task.Id">
 					<a class="btn btn-warning" href="/Task/Edit/@task.Id"><i class="fas fa-edit"></i> Edit</a>
 					<a class="btn btn-danger" href="#" data-id="@task.Id"><i class="fas fa-trash"></i> Delete</a>
-					@if (task.Status == "Start")
-					{
-						<a class="status btn btn-primary" href="#" ><i class="fas fa-play"> Start</i></a>
-					}
-					else if(task.Status == "InProgress")
-					{
-						<a class="status btn btn-warning" href="#" ><i class="fas fa-spinner"> In Progress</i></a>
-					}
-					else
-					{
-						<button class="btn btn-success" disabled><i class="fas fa-check"> Completed</i></button>
-					}
 				</td>
 			</tr>
 		}
 
 	</tbody>
 </table>
-
-<div>
-	<a class="btn btn-primary" href="/Task/Create">Create Task</a>
-</div>
 
 
 <div class="page" style="margin-top:20px; text-align:center">
@@ -81,8 +65,5 @@
 	<a class="btn btn-outline-dark" href="#" style="display:none">Next</a>
 </div>
 
-
-
-<script src="~/js/task.js"></script>
-
+<script src="/js/expiredTasks.js"></script>
 

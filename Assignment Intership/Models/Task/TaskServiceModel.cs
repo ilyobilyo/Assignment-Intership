@@ -12,6 +12,8 @@ namespace Assignment_Intership.Models.Task
 
         public DateTime DueDate { get; set; }
 
+        public string? Status { get; set; }
+
         public Guid? EmployeeId { get; set; }
 
         public EmployeeServiceModel? Employee { get; set; }
