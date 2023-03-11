@@ -49,13 +49,17 @@
 				<td>
 					<a class="btn btn-warning" href="/Task/Edit/@task.Id">Edit</a>
 					<a class="btn btn-danger" href="#" data-id="@task.Id">Delete</a>
-					@if (task.IsCompleted)
+					@if (task.Status == "Start")
 					{
-						<button class="btn btn-secondary" disabled>Completed</button>
+						<a class="status btn btn-primary" href="#" data-id="@task.Id">Start</a>
+					}
+					else if(task.Status == "InProgress")
+					{
+						<a class="status btn btn-warning" href="#" data-id="@task.Id">In Progress</a>
 					}
 					else
 					{
-						<a class="complete btn btn-success" href="#" data-id="@task.Id">Complete</a>
+						<button class="btn btn-secondary" disabled>Completed</button>
 					}
 				</td>
 			</tr>
