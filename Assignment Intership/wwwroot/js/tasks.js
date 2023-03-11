@@ -1,5 +1,5 @@
 ﻿
-	const completeBtns = document.querySelectorAll('.complete');
+	const completeBtns = document.querySelectorAll('.status');
 
 	completeBtns.forEach(b => b.addEventListener('click', async (e) => {
 		e.preventDefault();
@@ -7,16 +7,27 @@
 
 		const td = e.target.parentElement;
 
-		const response = await fetch('/Task/Complete/' + id);
+		const response = await fetch('/Task/ChangeTaskStatus/' + id);
 
 		if (response.ok) {
+			const data = await response.json();
 			e.target.remove();
 
 			let btn = document.createElement('button');
 			btn.classList.add('btn');
-			btn.classList.add('btn-secondary');
-			btn.disabled = true;
-			btn.textContent = 'Completed';
+
+			if (data.task.status == 'Start') {
+				btn.classList.add('btn-warning');
+				btn.textContent = 'In Progress';
+
+			} else if (data.task.status == 'InProgress') {
+				btn.classList.add('btn-success');
+				btn.textContent = 'Complete';
+			} else {
+				btn.classList.add('btn-secondary');
+				btn.disabled = true;
+				btn.textContent = 'Completed';
+            }
 
 			td.appendChild(btn);
 		}
