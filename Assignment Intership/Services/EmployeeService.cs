@@ -109,49 +109,39 @@ namespace Assignment_Intership.Services
         {
             int pageSize = PagenationConstants.PageSize;
 
-            List<Employee> employeesDataModels;
+            List<Employee> employeesDataModels = new List<Employee>();
 
             if (criteria == "top5")
             {
-                var employeesWithCompletedTasksForLastMonthExists = await repo.All<Employee>().AnyAsync(x => x.CompletedTasksForLastMonth > 0);
+                var isAlreadyUpdated = await repo.All<Employee>()
+                    .AnyAsync(x => x.UpdatedAt.Month == DateTime.Now.Month);
 
-                if (employeesWithCompletedTasksForLastMonthExists)
+                if (DateTime.Now.Day == 1 && !isAlreadyUpdated)
                 {
-                    employeesDataModels = await repo.All<Employee>()
-                        .Where(x => x.CompletedTasksForLastMonth > 0)
-                        .OrderByDescending(x => x.CompletedTasksForLastMonth)
-                        .Take(5)
-                        .ToListAsync();
-                }
-                else
-                {
+                    await ResetCompletedTasksForLastMonth();
+
                     employeesDataModels = await repo.All<Employee>()
                         .Include(x => x.Tasks)
                         .Where(x => x.Tasks.Any(s => s.CompletedAt.Month == DateTime.Now.Month - 1))
                         .OrderByDescending(x => x.Tasks.Count(s => s.CompletedAt.Month == DateTime.Now.Month - 1))
                         .Take(5)
                         .ToListAsync();
-                }
 
-                if (DateTime.Now.Day == 1 || employeesDataModels.Count() > 0)
-                {
-                    if (DateTime.Now.Day == 1)
+                    foreach (var employee in employeesDataModels)
                     {
-                        foreach (var employee in employeesDataModels)
-                        {
-                            employee.CompletedTasksForLastMonth = await GetTasksCountForLastMonth(employee.Id);
-                        }
+                        employee.CompletedTasksForLastMonth = await GetTasksCountForLastMonth(employee.Id);
                     }
-                    else
-                    {
-                        foreach (var employee in employeesDataModels)
-                        {
-                            employee.CompletedTasksForLastMonth = await GetTasksCountForLastMonth(employee.Id);
-                        }
-                    }
-
 
                     await repo.SaveChangesAsync();
+
+                }
+                else
+                {
+                    employeesDataModels = await repo.All<Employee>()
+                        .Where(x => x.CompletedTasksForLastMonth > 0)
+                        .OrderByDescending(x => x.CompletedTasksForLastMonth)
+                        .Take(5)
+                        .ToListAsync();
                 }
 
                 var serviceModels = mapper.Map<IEnumerable<EmployeeServiceModel>>(employeesDataModels);
@@ -256,6 +246,20 @@ namespace Assignment_Intership.Services
                 .Where(x => x.Id == id)
                 .Select(x => x.Photo)
                 .FirstOrDefaultAsync();
+        }
+
+        private async System.Threading.Tasks.Task ResetCompletedTasksForLastMonth()
+        {
+            var employees = await repo.All<Employee>()
+                .ToListAsync();
+
+            foreach (var employee in employees)
+            {
+                employee.CompletedTasksForLastMonth = 0;
+                employee.UpdatedAt = DateTime.Now;
+            }
+
+            await repo.SaveChangesAsync();
         }
     }
 }
