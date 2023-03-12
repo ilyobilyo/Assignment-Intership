@@ -165,7 +165,9 @@ namespace Assignment_Intership.Controllers
             {
                 var task = await taskService.ChangeTaskStatus(id);
 
-                return Ok(new {Task = task});
+                var viewModel = mapper.Map<TaskViewModel>(task);
+
+                return Ok(new {Task = viewModel });
             }
             catch (Exception e)
             {
