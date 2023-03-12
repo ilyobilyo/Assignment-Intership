@@ -225,7 +225,10 @@ namespace Assignment_Intership.Services
             employee.PhoneNumber = model.PhoneNumber;
             employee.MonthlySalary = model.MonthlySalary;
             employee.DateOfBirth = model.DateOfBirth;
-            employee.Photo = PhotoToBinary(model.PhotoFile);
+            if (model.PhotoFile != null)
+            {
+                employee.Photo = PhotoToBinary(model.PhotoFile);
+            }
             employee.UpdatedAt = DateTime.Now;
         }
 
