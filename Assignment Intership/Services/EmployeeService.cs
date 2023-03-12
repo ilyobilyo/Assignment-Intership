@@ -113,23 +113,53 @@ namespace Assignment_Intership.Services
 
             if (criteria == "top5")
             {
-                employeesDataModels = await repo.All<Employee>()
-                    .Include(x => x.Tasks)
-                    .Where(x => x.Tasks.Any(s => s.CompletedAt.Month == DateTime.Now.Month - 1))
-                    .OrderByDescending(x => x.Tasks.Count(s => s.CompletedAt.Month == DateTime.Now.Month - 1))
-                    .Take(5)
-                    .ToListAsync();
+                var employeesWithCompletedTasksForLastMonthExists = await repo.All<Employee>().AnyAsync(x => x.CompletedTasksForLastMonth > 0);
 
-				var serviceModels = mapper.Map<IEnumerable<EmployeeServiceModel>>(employeesDataModels);
+                if (employeesWithCompletedTasksForLastMonthExists)
+                {
+                    employeesDataModels = await repo.All<Employee>()
+                        .Where(x => x.CompletedTasksForLastMonth > 0)
+                        .OrderByDescending(x => x.CompletedTasksForLastMonth)
+                        .Take(5)
+                        .ToListAsync();
+                }
+                else
+                {
+                    employeesDataModels = await repo.All<Employee>()
+                        .Include(x => x.Tasks)
+                        .Where(x => x.Tasks.Any(s => s.CompletedAt.Month == DateTime.Now.Month - 1))
+                        .OrderByDescending(x => x.Tasks.Count(s => s.CompletedAt.Month == DateTime.Now.Month - 1))
+                        .Take(5)
+                        .ToListAsync();
+                }
 
-				foreach (var employee in serviceModels)
-				{
-					employee.CompletedTasksForLastMonth = await GetTasksCountForLastMonth(employee.Id);
-				}
+                if (DateTime.Now.Day == 1 || employeesDataModels.Count() > 0)
+                {
+                    if (DateTime.Now.Day == 1)
+                    {
+                        foreach (var employee in employeesDataModels)
+                        {
+                            employee.CompletedTasksForLastMonth = await GetTasksCountForLastMonth(employee.Id);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var employee in employeesDataModels)
+                        {
+                            employee.CompletedTasksForLastMonth = await GetTasksCountForLastMonth(employee.Id);
+                        }
+                    }
 
-				return serviceModels;
 
-			}
+                    await repo.SaveChangesAsync();
+                }
+
+                var serviceModels = mapper.Map<IEnumerable<EmployeeServiceModel>>(employeesDataModels);
+
+
+                return serviceModels;
+
+            }
             else
             {
                 employeesDataModels = await repo.All<Employee>()
@@ -213,19 +243,19 @@ namespace Assignment_Intership.Services
         }
 
         private async Task<int> GetTasksCountForLastMonth(Guid id)
-		{
+        {
             return await repo.All<Data.Models.Task>()
                 .Include(x => x.Employee)
                 .Where(x => x.EmployeeId == id)
                 .CountAsync(x => x.CompletedAt.Month == DateTime.Now.Month - 1);
-		}
+        }
 
-		public Task<byte[]> GetImage(Guid id)
-		{
+        public Task<byte[]> GetImage(Guid id)
+        {
             return repo.All<Employee>()
                 .Where(x => x.Id == id)
                 .Select(x => x.Photo)
                 .FirstOrDefaultAsync();
-		}
-	}
+        }
+    }
 }
