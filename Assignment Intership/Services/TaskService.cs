@@ -38,11 +38,6 @@ namespace Assignment_Intership.Services
             }
             else if (task.Status == Constants.TaskStatus.InProgress)
             {
-                task.Status = Constants.TaskStatus.Completed;
-                task.UpdatedAt = DateTime.Now;
-            }
-            else
-            {
                 var employee = await employeeService.GetById(task.EmployeeId);
 
                 if (employee == null)
@@ -50,7 +45,9 @@ namespace Assignment_Intership.Services
                     throw new ArgumentException("This task dont have an employee");
                 }
 
+                task.Status = Constants.TaskStatus.Completed;
                 task.IsCompleted = true;
+                task.UpdatedAt = DateTime.Now;
                 task.CompletedAt = DateTime.Now;
                 employee.CompletedTasks++;
             }
@@ -136,6 +133,7 @@ namespace Assignment_Intership.Services
 
             var tasks = await repo.All<Assignment_Intership.Data.Models.Task>()
                 .Include(x => x.Employee)
+                .Where(x => x.CompletedAt <= x.DueDate)
                 .OrderByDescending(x => x.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -161,7 +159,9 @@ namespace Assignment_Intership.Services
 
         public async Task<int> GetTotalPages()
         {
-            var totalTasksCount = await repo.All<Data.Models.Task>().CountAsync();
+            var totalTasksCount = await repo.All<Data.Models.Task>()
+                .Where(x => x.CompletedAt <= x.DueDate)
+                .CountAsync();
 
             if (totalTasksCount % PagenationConstants.PageSize != 0)
             {

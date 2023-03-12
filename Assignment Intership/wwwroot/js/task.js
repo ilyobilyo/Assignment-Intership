@@ -29,6 +29,7 @@ function onChange(e) {
 			if (data.task.status == 'InProgress') {
 				btn.classList.add('btn-warning');
 				btn.dataset.id = data.task.id;
+				btn.addEventListener('click', onChange);
 
 				const i = document.createElement('i');
 				i.classList.add('fas');
@@ -46,7 +47,6 @@ function onChange(e) {
 				btn.disabled = true;
 			}
 
-			btn.addEventListener('click', onChange)
 			td.appendChild(btn);
 		})
 
@@ -84,3 +84,4 @@ deleteBtns.forEach(b => b.addEventListener('click', async (e) => {
 	}
 
 }))
+
