@@ -12,7 +12,6 @@ namespace Assignment_Intership.Models.Employee.EmployeeViewModels
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required]
 		public IFormFile PhotoFile { get; set; }
 
 		[Required]
