@@ -30,6 +30,8 @@ namespace Assignment_Intership.Data.Models
 
         public int CompletedTasks { get; set; }
 
+        public int CompletedTasksForLastMonth { get; set; }
+
         public ICollection<Task> Tasks { get; set; } = new HashSet<Task>();
 
         public DateTime CreatedAt { get; set; }
