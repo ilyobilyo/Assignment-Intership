@@ -210,6 +210,14 @@ namespace Assignment_Intership.Services
             return totalEmployeesCount / PagenationConstants.PageSize;
         }
 
+        public Task<byte[]> GetImage(Guid id)
+        {
+            return repo.All<Employee>()
+                .Where(x => x.Id == id)
+                .Select(x => x.Photo)
+                .FirstOrDefaultAsync();
+        }
+
         private void UpdateEmployee(Employee employee, EmployeeServiceModel model)
         {
             employee.FullName = model.FullName;
@@ -238,14 +246,6 @@ namespace Assignment_Intership.Services
                 .Include(x => x.Employee)
                 .Where(x => x.EmployeeId == id)
                 .CountAsync(x => x.CompletedAt.Month == DateTime.Now.Month - 1);
-        }
-
-        public Task<byte[]> GetImage(Guid id)
-        {
-            return repo.All<Employee>()
-                .Where(x => x.Id == id)
-                .Select(x => x.Photo)
-                .FirstOrDefaultAsync();
         }
 
         private async System.Threading.Tasks.Task ResetCompletedTasksForLastMonth()
