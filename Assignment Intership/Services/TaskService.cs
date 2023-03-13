@@ -36,7 +36,7 @@ namespace Assignment_Intership.Services
                 task.Status = Constants.TaskStatus.InProgress;
                 task.UpdatedAt = DateTime.Now;
             }
-            else if (task.Status == Constants.TaskStatus.InProgress)
+            else
             {
                 var employee = await employeeService.GetById(task.EmployeeId);
 
