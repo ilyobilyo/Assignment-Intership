@@ -114,7 +114,7 @@ namespace Assignment_Intership.Services
             if (criteria == "top5")
             {
                 var isAlreadyUpdated = await repo.All<Employee>()
-                    .AnyAsync(x => x.UpdatedAt.Month == DateTime.Now.Month);
+                    .AnyAsync(x => x.UpdatedAt.Month == DateTime.Now.Month && x.UpdatedAt.Year == DateTime.Now.Year);
 
                 if (DateTime.Now.Day == 1 && !isAlreadyUpdated)
                 {
